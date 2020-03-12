@@ -1,21 +1,42 @@
+from item import Food, Egg
+
 # Write a class to hold player information, e.g. what room they are in
 # currently.
-
-class Player():
+class Player:
     def __init__(self, name, current_room):
         self.name = name
         self.current_room = current_room
-    def move(self):
-        direction = input('Do you go (n)orth, (s)outh, (e)ast, or (w)est? \n')
-        if direction == 'n' and self.current_room.n_to != None:
-                self.current_room = self.current_room.n_to
-        elif direction == 's' and self.current_room.s_to != None:
-                self.current_room = self.current_room.s_to
-        elif direction == 'e' and self.current_room.e_to != None:  
-                self.current_room = self.current_room.e_to
-        elif direction == 'w' and self.current_room.w_to != None:
-                self.current_room = self.current_room.w_to
+        self.items = []
+        self.strength = 100
+    def travel(self, direction):
+        if getattr(self.current_room, f"{direction}_to"):
+            self.current_room = getattr(self.current_room, f"{direction}_to")
+            print(self.current_room)
         else:
-            print('Invalid input, try again.\n')
-            self.move()
-            
+            print("You cannot move in that direction")
+    def print_inventory(self):
+        print("You are holding: ")
+        for item in self.items:
+            print(item.name)
+    def eat(self, food_item):
+        if not isinstance(food_item, Food):
+            print(f"You cannot eat {food_item.name}")
+        else:
+            self.strength += food_item.calories
+            print(f"You have eaten {food_item.name}, your strength is now {self.strength}")
+            self.items.remove(food_item)
+    def get(self, selection):
+        print("")
+        self.items.append(selection)
+        print(f'You picked up a {selection.name}')
+        self.current_room.items.remove(selection)
+        print('Where to now?')
+    def drop(self, selection):
+        print("")
+        self.items.remove(selection)
+        print(f'You dropped a {selection.name}')
+        self.current_room.items.append(selection)
+        print('Where to now?')
+
+
+
