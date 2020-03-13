@@ -1,4 +1,6 @@
 from room import Room
+from player import Player
+from item import Item, Food, Egg
 
 # Declare all the rooms
 
@@ -21,6 +23,12 @@ chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+item = {
+    'sword': Item("sword", "It is a magnificent sword."),
+
+    'cylinder': Item("cylinder", "A cylinder, its smooth surface glistens of an otherwordly reflection")
+}
+
 
 # Link rooms together
 
@@ -33,11 +41,27 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+room['foyer'].items.extend([item['cylinder'], item['sword']])
+
+rock = Item("rock", "This is a rock.")
+sandwich = Food("sandwich", "This is a delicious sandwich.", 100)
+egg = Egg()
+
 #
 # Main
 #
 
 # Make a new player object that is currently in the 'outside' room.
+player = Player(input("Please enter your name: "), room['outside'])
+player.items.append(rock)
+player.items.append(sandwich)
+player.items.append(egg)
+print(player.current_room)
+
+# player.eat(rock)
+# player.eat(sandwich)
+# player.eat(egg)
+
 
 # Write a loop that:
 #
@@ -49,3 +73,35 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+valid_directions = ("n", "s", "e", "w")
+
+while True:
+    cmd = input("\n~~> ")
+    if cmd == "q":
+        print("Goodbye!")
+        exit(0)
+    elif cmd in valid_directions:
+        player.travel(cmd)
+        player.current_room.print_items()
+    elif cmd == "i":
+        player.print_inventory()
+    elif cmd == "get":
+        try:
+            selection = input("\nWhich item?\n\n")
+            selection = item[selection]
+            player.get(selection)
+        except:
+            pass
+    elif cmd == "drop":
+        try:
+            selection = input("\nWhich item?\n\n")
+            selection = item[selection]
+            player.drop(selection)
+        except:
+            pass
+    else:
+        print("I did not understand that command")
+
+
+
